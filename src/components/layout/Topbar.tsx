@@ -1,10 +1,10 @@
-import { Search, Bell, ChevronDown, LogOut } from "lucide-react";
+import { Search, Bell, ChevronDown, LogOut, Menu } from "lucide-react";
 import { useApp } from "../../contexts/AppContext";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Topbar = () => {
-  const { user, setUser } = useApp();
+  const { user, setUser, isMobileMenuOpen, setMobileMenuOpen } = useApp();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -23,15 +23,25 @@ const Topbar = () => {
   };
 
   return (
-    <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shadow-card sticky top-0 z-20">
-      {/* Search */}
-      <div className="relative w-full max-w-md">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Rechercher..."
-          className="w-full pl-9 pr-4 py-2 text-sm bg-secondary rounded-lg border-none outline-none focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-muted-foreground"
-        />
+    <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 md:px-6 shadow-card sticky top-0 z-20">
+      <div className="flex items-center gap-3 w-full max-w-md">
+        {/* Mobile Menu Toggle */}
+        <button 
+          onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden p-2 -ml-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground"
+        >
+          <Menu size={20} />
+        </button>
+
+        {/* Search */}
+        <div className="relative w-full">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Rechercher..."
+            className="w-full pl-9 pr-4 py-2 text-sm bg-secondary rounded-lg border-none outline-none focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-muted-foreground"
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

@@ -9,14 +9,22 @@ interface AppLayoutProps {
 }
 
 const AppLayout = ({ children }: AppLayoutProps) => {
-  const { toast } = useApp();
+  const { toast, isMobileMenuOpen, setMobileMenuOpen } = useApp();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       <Sidebar />
-      <div className="ml-[240px]">
+      <div className="md:ml-[240px] flex flex-col min-h-screen transition-all duration-300">
         <Topbar />
-        <main className="p-6 animate-fade-in">{children}</main>
+        <main className="p-4 md:p-6 animate-fade-in flex-1 overflow-x-hidden">{children}</main>
       </div>
 
       {/* Toast */}

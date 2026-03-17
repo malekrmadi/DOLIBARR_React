@@ -64,9 +64,9 @@ const AssistantPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px-48px)]">
+    <div className="flex flex-col h-[calc(100vh-80px-56px)] md:h-[calc(100vh-64px-48px)]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 md:mb-4">
         <div className="flex items-center gap-3">
           <Bot size={22} className="text-primary" />
           <h1 className="text-xl font-semibold">Assistant IA</h1>
@@ -76,10 +76,10 @@ const AssistantPage = () => {
         <div className="relative">
           <button
             onClick={() => setAgentDropdown(!agentDropdown)}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
+            className="flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
           >
-            {currentAgent.label}
-            <ChevronDown size={14} className="text-muted-foreground" />
+            <span className="truncate max-w-[100px] sm:max-w-none">{currentAgent.label}</span>
+            <ChevronDown size={14} className="text-muted-foreground flex-shrink-0" />
           </button>
           {agentDropdown && (
             <div className="absolute top-full right-0 mt-1 w-48 bg-card rounded-lg shadow-elevated border border-border py-1 z-10 animate-scale-in">
@@ -98,13 +98,13 @@ const AssistantPage = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto bg-card rounded-xl border border-border p-5 space-y-4">
+      <div className="flex-1 overflow-y-auto bg-card rounded-xl border border-border p-3 md:p-5 space-y-4">
         {messages.map(msg => (
           <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+              className={`max-w-[85%] md:max-w-[70%] px-3 py-2 md:px-4 md:py-2.5 rounded-2xl text-[13px] md:text-sm leading-relaxed ${
                 msg.role === "user"
                   ? "bg-primary text-primary-foreground rounded-br-md"
                   : "bg-secondary text-secondary-foreground rounded-bl-md"
@@ -126,14 +126,13 @@ const AssistantPage = () => {
           </div>
         ))}
 
-        {/* Suggestions */}
         {messages.length <= 1 && (
-          <div className="flex flex-wrap gap-2 mt-2">
+          <div className="flex flex-wrap gap-1.5 md:gap-2 mt-2">
             {currentAgent.suggestions.map(s => (
               <button
                 key={s}
                 onClick={() => sendMessage(s)}
-                className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-secondary hover:border-primary/30 transition-all text-muted-foreground hover:text-foreground"
+                className="text-[11px] md:text-xs px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-border hover:bg-secondary hover:border-primary/30 transition-all text-muted-foreground hover:text-foreground text-left"
               >
                 {s}
               </button>
@@ -144,10 +143,10 @@ const AssistantPage = () => {
       </div>
 
       {/* Input */}
-      <div className="mt-4 flex items-center gap-2">
+      <div className="mt-3 md:mt-4 flex items-center gap-1.5 md:gap-2">
         <button
           onClick={toggleRecording}
-          className={`p-2.5 rounded-lg transition-colors ${recording ? "bg-destructive text-destructive-foreground animate-pulse" : "hover:bg-secondary text-muted-foreground"}`}
+          className={`p-2 md:p-2.5 rounded-lg transition-colors flex-shrink-0 ${recording ? "bg-destructive text-destructive-foreground animate-pulse" : "bg-card border border-border hover:bg-secondary text-muted-foreground"}`}
         >
           {recording ? <MicOff size={18} /> : <Mic size={18} />}
         </button>
@@ -155,13 +154,13 @@ const AssistantPage = () => {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === "Enter" && sendMessage(input)}
-          placeholder="Écrire un message..."
-          className="flex-1 h-11 px-4 text-sm bg-card rounded-lg border border-border outline-none focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-muted-foreground"
+          placeholder="Message..."
+          className="flex-1 h-10 md:h-11 px-3 md:px-4 text-[13px] md:text-sm bg-card rounded-lg border border-border outline-none focus:ring-2 focus:ring-ring/20 transition-all placeholder:text-muted-foreground min-w-0"
         />
         <button
           onClick={() => sendMessage(input)}
           disabled={!input.trim()}
-          className="p-2.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-all disabled:opacity-50"
+          className="p-2 md:p-2.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-all disabled:opacity-50 flex-shrink-0"
         >
           <Send size={18} />
         </button>

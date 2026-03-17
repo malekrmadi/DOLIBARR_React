@@ -15,6 +15,8 @@ interface AppContextType {
   deleteContact: (id: string) => void;
   toast: { message: string; visible: boolean };
   showToast: (message: string) => void;
+  isMobileMenuOpen: boolean;
+  setMobileMenuOpen: (isOpen: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -30,6 +32,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [tiers, setTiers] = useState<Tier[]>(initialTiers);
   const [contactsList, setContacts] = useState<Contact[]>(initialContacts);
   const [toast, setToast] = useState({ message: "", visible: false });
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const showToast = useCallback((message: string) => {
     setToast({ message, visible: true });
@@ -74,6 +77,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       addTier, updateTier, deleteTier,
       addContact, updateContact, deleteContact,
       toast, showToast,
+      isMobileMenuOpen, setMobileMenuOpen,
     }}>
       {children}
     </AppContext.Provider>
