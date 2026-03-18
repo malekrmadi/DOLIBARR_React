@@ -90,27 +90,27 @@ const ContactsPage = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
           <table className="w-full text-sm">
-            <thead>
+            <thead className="bg-muted/50">
               <tr className="text-left border-b border-border">
-                <th className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase">Nom</th>
-                <th className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase hidden md:table-cell">Poste</th>
-                <th className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase hidden md:table-cell">Email</th>
-                <th className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase hidden lg:table-cell">Téléphone</th>
-                <th className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase">Tiers</th>
-                <th className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase text-right">Actions</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nom</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Poste</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Email</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Téléphone</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tiers</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map(c => (
-                <tr key={c.id} className="border-b border-border last:border-0 hover:bg-secondary/50 transition-colors">
-                  <td className="px-4 py-3 font-medium">{c.firstName} {c.lastName}</td>
-                  <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{c.position}</td>
-                  <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{c.email}</td>
-                  <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{c.phone}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{getTierName(c.tierId)}</td>
-                  <td className="px-4 py-3">
+                <tr key={c.id} className="border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
+                  <td className="px-5 py-4 font-medium">{c.firstName} {c.lastName}</td>
+                  <td className="px-5 py-4 text-muted-foreground hidden md:table-cell">{c.position}</td>
+                  <td className="px-5 py-4 text-muted-foreground hidden md:table-cell">{c.email}</td>
+                  <td className="px-5 py-4 text-muted-foreground hidden lg:table-cell">{c.phone}</td>
+                  <td className="px-5 py-4 text-muted-foreground">{getTierName(c.tierId)}</td>
+                  <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-1">
                       <CrmButton variant="ghost" size="icon" onClick={() => openEdit(c)}><Pencil size={15} /></CrmButton>
                       <CrmButton variant="ghost" size="icon" onClick={() => setDeleteId(c.id)}><Trash2 size={15} className="text-destructive" /></CrmButton>
@@ -119,7 +119,7 @@ const ContactsPage = () => {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Aucun contact trouvé</td></tr>
+                <tr><td colSpan={6} className="px-5 py-8 text-center text-muted-foreground">Aucun contact trouvé</td></tr>
               )}
             </tbody>
           </table>
@@ -128,8 +128,8 @@ const ContactsPage = () => {
 
       {/* Create/Edit Modal */}
       <CrmModal open={modalOpen} onClose={() => setModalOpen(false)} title={editContact ? "Modifier le contact" : "Créer un contact"}>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-2 gap-5">
             <CrmInput label="Prénom" value={form.firstName} onChange={e => set("firstName", e.target.value)} error={errors.firstName} />
             <CrmInput label="Nom" value={form.lastName} onChange={e => set("lastName", e.target.value)} error={errors.lastName} />
           </div>
@@ -138,7 +138,7 @@ const ContactsPage = () => {
           <CrmInput label="Poste" value={form.position} onChange={e => set("position", e.target.value)} />
           <CrmSelect label="Tiers" value={form.tierId} onChange={e => set("tierId", e.target.value)} error={errors.tierId}
             options={tiers.map(t => ({ value: t.id, label: t.name }))} />
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-3 pt-5 mt-2 border-t border-border">
             <CrmButton variant="outline" type="button" onClick={() => setModalOpen(false)}>Annuler</CrmButton>
             <CrmButton type="submit">{editContact ? "Enregistrer" : "Créer"}</CrmButton>
           </div>
@@ -147,8 +147,8 @@ const ContactsPage = () => {
 
       {/* Delete confirmation */}
       <CrmModal open={!!deleteId} onClose={() => setDeleteId(null)} title="Confirmer la suppression">
-        <p className="text-sm text-muted-foreground mb-5">Êtes-vous sûr de vouloir supprimer ce contact ?</p>
-        <div className="flex justify-end gap-2">
+        <p className="text-sm text-muted-foreground mb-6">Êtes-vous sûr de vouloir supprimer ce contact ? Cette action est irréversible.</p>
+        <div className="flex justify-end gap-3 pt-5 mt-2 border-t border-border">
           <CrmButton variant="outline" onClick={() => setDeleteId(null)}>Annuler</CrmButton>
           <CrmButton variant="destructive" onClick={handleDelete}>Supprimer</CrmButton>
         </div>

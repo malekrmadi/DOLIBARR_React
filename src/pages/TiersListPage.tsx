@@ -4,18 +4,37 @@ import { useApp } from "../contexts/AppContext";
 import { CrmButton } from "../components/crm/CrmButton";
 import CrmBadge from "../components/crm/CrmBadge";
 import CrmModal from "../components/crm/CrmModal";
+import CrmInput from "../components/crm/CrmInput";
+import CrmSelect from "../components/crm/CrmSelect";
 import { Plus, Search, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Tier } from "../data/types";
 
 const ITEMS_PER_PAGE = 8;
 
+const emptyForm = {
+  name: "",
+  type: "client" as Tier["type"],
+  email: "",
+  phone: "",
+  address: "",
+  city: "",
+  country: "France",
+  assignedTo: "",
+  status: "actif" as Tier["status"],
+};
+
 const TiersListPage = () => {
-  const { tiers, deleteTier } = useApp();
+  const { tiers, addTier, updateTier, deleteTier } = useApp();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editTier, setEditTier] = useState<Tier | null>(null);
+  const [form, setForm] = useState(emptyForm);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const filtered = useMemo(() => {
     return tiers.filter(t => {
@@ -31,18 +50,62 @@ const TiersListPage = () => {
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-  const handleDelete = () => {
-    if (deleteId) {
-      deleteTier(deleteId);
-      setDeleteId(null);
-    }
+  const openCreate = () => {
+    setEditTier(null);
+    setForm(emptyForm);
+    setErrors({});
+    setModalOpen(true);
   };
+
+  const openEdit = (tier: Tier) => {
+    setEditTier(tier);
+    setForm({
+      name: tier.name,
+      type: tier.type,
+      email: tier.email,
+      phone: tier.phone,
+      address: tier.address,
+      city: tier.city,
+      country: tier.country,
+      assignedTo: tier.assignedTo,
+      status: tier.status,
+    });
+    setErrors({});
+    setModalOpen(true);
+  };
+
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    if (!form.name.trim()) errs.name = "Requis";
+    if (!form.email.trim()) errs.email = "Requis";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    const tier: Tier = {
+      id: editTier?.id || `t${Date.now()}`,
+      ...form,
+      createdAt: editTier?.createdAt || new Date().toISOString(),
+    };
+    if (editTier) updateTier(tier);
+    else addTier(tier);
+    setModalOpen(false);
+  };
+
+  const handleDelete = () => {
+    if (deleteId) { deleteTier(deleteId); setDeleteId(null); }
+  };
+
+  const set = (key: string, val: string) => setForm(prev => ({ ...prev, [key]: val }));
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Tiers</h1>
-        <CrmButton onClick={() => navigate("/tiers/nouveau")}>
+        <CrmButton onClick={openCreate}>
           <Plus size={16} /> Créer un tiers
         </CrmButton>
       </div>
@@ -109,7 +172,7 @@ const TiersListPage = () => {
                       <CrmButton variant="ghost" size="icon" onClick={() => navigate(`/tiers/${tier.id}`)}>
                         <Eye size={15} />
                       </CrmButton>
-                      <CrmButton variant="ghost" size="icon" onClick={() => navigate(`/tiers/${tier.id}/modifier`)}>
+                      <CrmButton variant="ghost" size="icon" onClick={() => openEdit(tier)}>
                         <Pencil size={15} />
                       </CrmButton>
                       <CrmButton variant="ghost" size="icon" onClick={() => setDeleteId(tier.id)}>
@@ -154,12 +217,43 @@ const TiersListPage = () => {
         )}
       </div>
 
+      {/* Create/Edit Modal */}
+      <CrmModal open={modalOpen} onClose={() => setModalOpen(false)} title={editTier ? "Modifier le tiers" : "Créer un tiers"}>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-2 gap-5">
+            <div className="col-span-2">
+              <CrmInput label="Nom du tiers" value={form.name} onChange={e => set("name", e.target.value)} error={errors.name} />
+            </div>
+            <CrmSelect
+              label="Type"
+              value={form.type}
+              onChange={e => set("type", e.target.value)}
+              options={[{ value: "client", label: "Client" }, { value: "prospect", label: "Prospect" }]}
+            />
+            <CrmSelect
+              label="Statut"
+              value={form.status}
+              onChange={e => set("status", e.target.value)}
+              options={[{ value: "actif", label: "Actif" }, { value: "inactif", label: "Inactif" }]}
+            />
+            <CrmInput label="Email" type="email" value={form.email} onChange={e => set("email", e.target.value)} error={errors.email} />
+            <CrmInput label="Téléphone" value={form.phone} onChange={e => set("phone", e.target.value)} />
+            <CrmInput label="Adresse" value={form.address} onChange={e => set("address", e.target.value)} />
+            <CrmInput label="Ville" value={form.city} onChange={e => set("city", e.target.value)} />
+            <CrmInput label="Pays" value={form.country} onChange={e => set("country", e.target.value)} />
+            <CrmInput label="Commercial assigné" value={form.assignedTo} onChange={e => set("assignedTo", e.target.value)} />
+          </div>
+          <div className="flex justify-end gap-3 pt-5 mt-2 border-t border-border">
+            <CrmButton variant="outline" type="button" onClick={() => setModalOpen(false)}>Annuler</CrmButton>
+            <CrmButton type="submit">{editTier ? "Enregistrer" : "Créer"}</CrmButton>
+          </div>
+        </form>
+      </CrmModal>
+
       {/* Delete confirmation */}
       <CrmModal open={!!deleteId} onClose={() => setDeleteId(null)} title="Confirmer la suppression">
-        <p className="text-sm text-muted-foreground mb-5">
-          Êtes-vous sûr de vouloir supprimer ce tiers ? Cette action est irréversible.
-        </p>
-        <div className="flex justify-end gap-2">
+        <p className="text-sm text-muted-foreground mb-6">Êtes-vous sûr de vouloir supprimer ce tiers ? Cette action est irréversible.</p>
+        <div className="flex justify-end gap-3 pt-5 mt-2 border-t border-border">
           <CrmButton variant="outline" onClick={() => setDeleteId(null)}>Annuler</CrmButton>
           <CrmButton variant="destructive" onClick={handleDelete}>Supprimer</CrmButton>
         </div>

@@ -17,23 +17,25 @@ const CrmModal = ({ open, onClose, title, children }: CrmModalProps) => (
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-foreground/5 z-40"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={onClose}
         />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-card rounded-xl shadow-elevated border border-border z-50 overflow-hidden"
-        >
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-            <h2 className="text-lg font-semibold">{title}</h2>
-            <button onClick={onClose} className="p-1 rounded-lg hover:bg-secondary transition-colors">
-              <X size={18} className="text-muted-foreground" />
-            </button>
-          </div>
-          <div className="p-5">{children}</div>
-        </motion.div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="w-full max-w-lg bg-card rounded-xl shadow-elevated border border-border overflow-hidden pointer-events-auto max-h-[90vh] flex flex-col"
+          >
+            <div className="flex items-center justify-between px-6 py-5 border-b border-border shrink-0">
+              <h2 className="text-lg font-semibold">{title}</h2>
+              <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
+                <X size={18} className="text-muted-foreground" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto">{children}</div>
+          </motion.div>
+        </div>
       </>
     )}
   </AnimatePresence>
